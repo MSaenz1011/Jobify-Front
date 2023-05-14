@@ -13,7 +13,7 @@ export default function Home() {
         </h1>
 
         <div className='flex justify-evenly mt-10 mb-10'>
-          <div className='max-w-sm rounded overflow-hidden shadow-lg'>
+          <div className='max-w-sm rounded overflow-hidden shadow-lg bg-slate-300 shadow-black'>
             <div className='px-6 py-4'>
               <div className='font-bold text-xl mb-2'>
                 Jobify: Your best option
@@ -26,7 +26,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className='max-w-sm rounded overflow-hidden shadow-lg'>
+          <div className='max-w-sm rounded overflow-hidden shadow-lg bg-slate-300 shadow-black'>
             <div className='px-6 py-4'>
               <div className='font-bold text-xl mb-2'>Check the jobs</div>
               <p className='text-gray-700 text-base'>
