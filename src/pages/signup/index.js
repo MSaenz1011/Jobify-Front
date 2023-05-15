@@ -1,9 +1,74 @@
 import Link from "next/link";
 import Footer from "@/components/Footer";
 import NavBar from "@/components/NavBar";
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
+import { TextEncoder, TextDecoder } from "fast-text-encoding";
 
 export default function SignUpMain() {
+  const [userData, setUserData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({});
+  const { fullName, email, password } = userData;
+
+  const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+  const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    setUserData({
+      ...userData,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const validationErrors = {};
+
+    if (!fullName.trim()) {
+      validationErrors.userName = "Please Enter Your Name";
+    }
+
+    if (!email.trim()) {
+      validationErrors.userEmail = "Please Enter Your Email";
+    } else if (!emailRegex.test(email.trim().replace(/\s+/g, ""))) {
+      validationErrors.userEmail = "Enter a Valid Email";
+    }
+
+    if (!password.trim()) {
+      validationErrors.userPassword = "Please Enter Your Password";
+    } else if (!passwordRegex.test(password.trim().replace(/\s+/g, ""))) {
+      validationErrors.userPassword =
+        "Password Must Have This: 8 characters, a number, one uppercase letter and one lowercase letter";
+    }
+
+    setErrors(validationErrors);
+
+    const createUserDB = async () => {
+      try {
+        console.log("Sending POST request...");
+        const res = await axios.post(
+          "http://localhost:8080/api/user/signup",
+          userData
+        );
+        console.log("Response received:", res.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    if (Object.keys(validationErrors).length === 0) {
+      console.log("Submitting form data...");
+      createUserDB();
+      setUserData({ fullName: "", email: "", password: "" });
+    }
+  };
+
   return (
     <React.Fragment>
       <NavBar />
@@ -14,7 +79,12 @@ export default function SignUpMain() {
               <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white'>
                 Log in to your account
               </h1>
-              <form className='space-y-4 md:space-y-6' action='#'>
+
+              <form
+                className='space-y-4 md:space-y-6'
+                action='#'
+                onSubmit={handleSubmit}
+              >
                 <div>
                   <label
                     htmlFor='email'
@@ -23,14 +93,21 @@ export default function SignUpMain() {
                     Your Name
                   </label>
                   <input
-                    type='email'
-                    name='email'
-                    id='email'
+                    type='text'
+                    name='fullName'
+                    value={fullName}
+                    onChange={(event) => handleChange(event)}
+                    id='fullName'
                     className='bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                     placeholder='name@company.com'
                     required=''
                   />
                 </div>
+                {errors.userName && (
+                  <span className='inline-block mt-2 px-2 py-1 text-sm font-medium text-white bg-red-500 rounded-md animate-pulse'>
+                    {errors.userName}
+                  </span>
+                )}
 
                 <div>
                   <label
@@ -43,11 +120,19 @@ export default function SignUpMain() {
                     type='email'
                     name='email'
                     id='email'
+                    value={email}
+                    onChange={(event) => handleChange(event)}
                     className='bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                     placeholder='name@company.com'
                     required=''
                   />
                 </div>
+                {errors.userEmail && (
+                  <span className='inline-block mt-2 px-2 py-1 text-sm font-medium text-white bg-red-500 rounded-md animate-pulse'>
+                    {errors.userEmail}
+                  </span>
+                )}
+
                 <div>
                   <label
                     htmlFor='password'
@@ -58,12 +143,19 @@ export default function SignUpMain() {
                   <input
                     type='password'
                     name='password'
-                    id='password'
+                    value={password}
+                    onChange={(event) => handleChange(event)}
                     placeholder='••••••••'
                     className='bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                     required=''
                   />
                 </div>
+
+                {errors.userPassword && (
+                  <span className='inline-block mt-2 px-2 py-1 text-sm font-medium text-white bg-red-500 rounded-md animate-pulse'>
+                    {errors.userPassword}
+                  </span>
+                )}
 
                 <button
                   type='submit'
@@ -71,16 +163,17 @@ export default function SignUpMain() {
                 >
                   Log in
                 </button>
-                <p className='text-sm font-light text-gray-500 dark:text-gray-400'>
-                  Already have an account?{" "}
-                  <Link
-                    className='font-medium text-primary-600 underline underline-offset-1'
-                    href='/login'
-                  >
-                    Login here
-                  </Link>
-                </p>
               </form>
+
+              <p className='text-sm font-light text-gray-500 dark:text-gray-400'>
+                Already have an account?{" "}
+                <Link
+                  className='font-medium text-primary-600 underline underline-offset-1'
+                  href='/login'
+                >
+                  Login here
+                </Link>
+              </p>
             </div>
           </div>
         </div>
