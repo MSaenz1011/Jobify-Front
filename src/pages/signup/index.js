@@ -3,7 +3,6 @@ import Footer from "@/components/Footer";
 import NavBar from "@/components/NavBar";
 import React, { useState } from "react";
 import axios from "axios";
-import { TextEncoder, TextDecoder } from "fast-text-encoding";
 
 export default function SignUpMain() {
   const [userData, setUserData] = useState({
@@ -167,7 +166,7 @@ export default function SignUpMain() {
                   type='submit'
                   className='w-full text-black bg-cyan-400 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800'
                 >
-                  Log in
+                  Sign Up
                 </button>
 
                 {isAccountCreated && (

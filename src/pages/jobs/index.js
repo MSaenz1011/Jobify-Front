@@ -10,7 +10,7 @@ export default function Jobs({ dataJobs }) {
     <React.Fragment>
       <NavBar />
       <h1 className='font-bold text-2xl lg:text-3xl text-black pb-8 mt-8 text-center'>
-        Avaiable Jobs{" "}
+        Available Jobs{" "}
       </h1>
       <div className='flex flex-wrap justify-center mb-10'>
         {dataJobs.data.map((item) => {

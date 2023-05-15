@@ -4,14 +4,13 @@ import NavBar from "@/components/NavBar";
 import React from "react";
 import { useState } from "react";
 import axios from "axios";
-import { TextEncoder, TextDecoder } from "fast-text-encoding";
+import Cookies from "js-cookie";
 
 export default function LoginMain() {
   const [userData, setUserData] = useState({
     email: "",
     password: "",
   });
-
   const [errors, setErrors] = useState({});
   const { email, password } = userData;
 
@@ -27,7 +26,7 @@ export default function LoginMain() {
     });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const validationErrors = {};
 
@@ -47,7 +46,19 @@ export default function LoginMain() {
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length === 0) {
-      setUserData({ email: "", password: "" });
+      try {
+        const response = await axios.post(
+          "http://localhost:8080/api/user/signin",
+          { email, password }
+        );
+        const { data } = response.data;
+
+        Cookies.set("token", data.token, { expires: 1 });
+
+        window.location.href = "/";
+      } catch (error) {
+        console.log("Wrong email or password");
+      }
     }
   };
 
