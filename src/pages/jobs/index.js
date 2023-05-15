@@ -3,17 +3,20 @@ import Footer from "@/components/Footer";
 import NavBar from "@/components/NavBar";
 import Image from "next/image";
 import Link from "next/link";
+import axios from "axios";
 
 export default function Jobs({ dataJobs }) {
   return (
     <React.Fragment>
       <NavBar />
-      <h1>Avaiable Jobs </h1>
-      <div className='flex flex-wrap justify-center'>
+      <h1 className='font-bold text-2xl lg:text-3xl text-black pb-8 mt-8 text-center'>
+        Avaiable Jobs{" "}
+      </h1>
+      <div className='flex flex-wrap justify-center mb-10'>
         {dataJobs.data.map((item) => {
           return (
             <Link href={`/jobs/${item._id}`} key={item._id}>
-              <div className='m-4 p-4 max-w-sm rounded-md shadow-md bg-white'>
+              <div className='m-4 p-4 max-w-sm rounded-md shadow-md bg-gray-400'>
                 <div className='h-48'>
                   <Image
                     src={item.img}
@@ -39,15 +42,22 @@ export default function Jobs({ dataJobs }) {
 }
 
 export async function getServerSideProps(context) {
-  const apiJobs = await fetch("http://localhost:8080/api/jobs", {
-    method: "GET",
-  });
+  try {
+    const response = await axios.get("http://localhost:8080/api/jobs");
+    const dataJobs = response.data;
 
-  const dataJobs = await apiJobs.json();
+    return {
+      props: {
+        dataJobs,
+      },
+    };
+  } catch (error) {
+    console.error(error);
 
-  return {
-    props: {
-      dataJobs,
-    },
-  };
+    return {
+      props: {
+        dataJobs: null,
+      },
+    };
+  }
 }

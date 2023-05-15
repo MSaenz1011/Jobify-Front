@@ -13,6 +13,7 @@ export default function SignUpMain() {
   });
   const [errors, setErrors] = useState({});
   const { fullName, email, password } = userData;
+  const [isAccountCreated, setIsAccountCreated] = useState(false);
 
   const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
   const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
@@ -57,6 +58,11 @@ export default function SignUpMain() {
           userData
         );
         console.log("Response received:", res.data);
+        setIsAccountCreated(true);
+
+        setTimeout(() => {
+          setIsAccountCreated(false);
+        }, 4000);
       } catch (error) {
         console.error(error);
       }
@@ -77,7 +83,7 @@ export default function SignUpMain() {
           <div className='w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700'>
             <div className='p-6 space-y-4 md:space-y-6 sm:p-8'>
               <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white'>
-                Log in to your account
+                Sign up today
               </h1>
 
               <form
@@ -163,6 +169,12 @@ export default function SignUpMain() {
                 >
                   Log in
                 </button>
+
+                {isAccountCreated && (
+                  <div className='bg-green-100 text-green-900 px-4 py-3 rounded-md my-4'>
+                    Account created successfully!
+                  </div>
+                )}
               </form>
 
               <p className='text-sm font-light text-gray-500 dark:text-gray-400'>
@@ -171,7 +183,7 @@ export default function SignUpMain() {
                   className='font-medium text-primary-600 underline underline-offset-1'
                   href='/login'
                 >
-                  Login here
+                  Log in
                 </Link>
               </p>
             </div>
