@@ -5,6 +5,7 @@ import React from "react";
 import { useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { useRouter } from "next/router";
 
 export default function LoginMain() {
   const [userData, setUserData] = useState({
@@ -13,6 +14,7 @@ export default function LoginMain() {
   });
   const [errors, setErrors] = useState({});
   const { email, password } = userData;
+  const router = useRouter();
 
   const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
   const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
@@ -55,7 +57,7 @@ export default function LoginMain() {
 
         Cookies.set("token", data.token, { expires: 1 });
 
-        window.location.href = "/";
+        router.push("/");
       } catch (error) {
         console.log("Wrong email or password");
       }
