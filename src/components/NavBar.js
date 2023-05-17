@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 export default function NavBar() {
   const [fullName, setFullName] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -40,6 +41,10 @@ export default function NavBar() {
     router.push("/");
   };
 
+  const handleToggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
   return (
     <nav className='bg-gray-800'>
       <div className='max-w-7xl mx-auto px-2 sm:px-6 lg:px-8'>
@@ -49,16 +54,6 @@ export default function NavBar() {
               Jobify
             </a>
           </div>
-
-          {loggedIn ? (
-            <h2 className='text-white font-bold text-md mx-5'>
-              Hello, {fullName}
-            </h2>
-          ) : (
-            <h2 className='text-white font-bold text-md mx-5'>
-              More jobs incoming
-            </h2>
-          )}
 
           <div className='flex mx-auto'>
             <Link
@@ -77,22 +72,31 @@ export default function NavBar() {
 
           <div className='flex'>
             {loggedIn ? (
-              <>
-                <Link
-                  href='/dashboard'
-                  className='text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md font-medium'
-                >
-                  Dashboard
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className='text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md font-medium'
-                >
-                  Logout
-                </button>
-              </>
+              <div
+                className='text-gray-300  hover:text-white px-3 py-2 rounded-md font-medium cursor-pointer'
+                onMouseEnter={handleToggleDropdown}
+                onMouseLeave={handleToggleDropdown}
+              >
+                Hello {fullName}
+                {isDropdownOpen && (
+                  <div className='absolute top-15 right-0 bg-white w-48 p-2 rounded shadow'>
+                    <Link
+                      href='/dashboard'
+                      className='text-gray-800 hover:bg-gray-200 block px-4 py-2'
+                    >
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className='text-gray-800 hover:bg-gray-200 block px-4 py-2'
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
-              <>
+              <div className='flex'>
                 <Link
                   href='/login'
                   className='text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md font-medium'
@@ -105,7 +109,7 @@ export default function NavBar() {
                 >
                   Signup
                 </Link>
-              </>
+              </div>
             )}
           </div>
         </div>
