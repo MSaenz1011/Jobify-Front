@@ -4,8 +4,9 @@ import Cookies from "js-cookie";
 import jwtDecode from "jwt-decode";
 import NavBar from "@/components/NavBar";
 import Image from "next/image";
+import PrivateRoute from "@/utils/privateRoute";
 
-export default function UserDashboard() {
+function UserDashboard() {
   const [activeTab, setActiveTab] = useState("profile");
   const [isUpdated, setIsUpdated] = useState(false);
   const [isPicUpdated, setIsPicUpdated] = useState(false);
@@ -336,3 +337,5 @@ export default function UserDashboard() {
     </React.Fragment>
   );
 }
+
+export default PrivateRoute(UserDashboard);
