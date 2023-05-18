@@ -7,7 +7,7 @@ import Image from "next/image";
 import PrivateRoute from "@/utils/privateRoute";
 
 function UserDashboard() {
-  const [activeTab, setActiveTab] = useState("profile");
+  const [activeTab, setActiveTab] = useState("editProfile");
   const [isUpdated, setIsUpdated] = useState(false);
   const [isPicUpdated, setIsPicUpdated] = useState(false);
   const [originalData, setOriginalData] = useState({});

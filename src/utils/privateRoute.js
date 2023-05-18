@@ -9,7 +9,7 @@ const PrivateRoute = (WrappedComponent) => {
     useEffect(() => {
       const token = Cookies.get("token");
       if (!token) {
-        router.replace("/login"); // Redirect to login page if no token
+        router.replace("/login");
         return;
       }
     }, []);
