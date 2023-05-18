@@ -8,6 +8,7 @@ const nextConfig = {
       "cdn.forbes.co",
       "www.cloud4c.com",
       "upload.wikimedia.org",
+      "res.cloudinary.com",
     ],
   },
 };

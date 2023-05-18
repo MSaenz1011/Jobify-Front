@@ -51,11 +51,11 @@ export default function SignUpMain() {
 
     const createUserDB = async () => {
       try {
-        console.log("Sending POST request...");
         const res = await axios.post(
           "http://localhost:8080/api/user/signup",
           userData
         );
+
         console.log("Response received:", res.data);
         setIsAccountCreated(true);
 

@@ -3,10 +3,16 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import jwtDecode from "jwt-decode";
 import NavBar from "@/components/NavBar";
+import Image from "next/image";
 
 export default function UserDashboard() {
   const [activeTab, setActiveTab] = useState("profile");
+  const [isUpdated, setIsUpdated] = useState(false);
+  const [isPicUpdated, setIsPicUpdated] = useState(false);
   const [originalData, setOriginalData] = useState({});
+  const [userId, setUserId] = useState("");
+
+  const [file, setFile] = useState(null);
   const [data, setData] = useState({
     fullName: "",
     email: "",
@@ -16,29 +22,107 @@ export default function UserDashboard() {
   });
 
   const { fullName, phone, city, image } = data;
+  const [errors, setErrors] = useState({});
+  const numberRegex = /^[0-9]*$/;
 
   const handleChange = (event) => {
-    const target = event.target;
-    const value =
-      target.type === "file" ? Array.from(target.files) : target.value;
-    const name = target.name;
-    setData((prevState) => ({
-      ...prevState,
+    const { name, value } = event.target;
+
+    setData({
+      ...data,
       [name]: value,
-    }));
+    });
+  };
+
+  const handlePicture = (e) => {
+    readFile(e.target.files[0]);
+    setFile(e.target.files);
+  };
+
+  const readFile = (file) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+  };
+
+  const updateInfo = () => {
+    const validationErrors = {};
+
+    if (!fullName.trim()) {
+      validationErrors.userName = "Please Enter Your Name";
+    }
+
+    if (!phone.trim()) {
+      validationErrors.userPhone = "Please Enter Your Phone Number";
+    } else if (!numberRegex.test(phone)) {
+      validationErrors.userPhone = "Only Numbers are allowed";
+    } else if (phone.trim().replace(/\s+/g, "").length !== 10) {
+      validationErrors.userPhone = "Enter a 10 number digit";
+    }
+
+    if (!city.trim()) {
+      validationErrors.userCity = "Please Enter a City";
+    }
+    setErrors(validationErrors);
+
+    const updateUser = async () => {
+      try {
+        const res = await axios.put(
+          `http://localhost:8080/api/user/${userId}`,
+          { fullName, phone, city }
+        );
+        setIsUpdated(true);
+
+        setTimeout(() => {
+          setIsUpdated(false);
+        }, 4000);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    if (Object.keys(validationErrors).length === 0) {
+      updateUser();
+      setData({ fullName: "", phone: "", city: "" });
+    }
+  };
+
+  const updateFile = async () => {
+    const data = new FormData();
+    data.append("fullName", fullName);
+
+    for (let i = 0; i < file.length; i++) {
+      data.append(`file:${i}`, file[i], file[i].name);
+    }
+
+    const response = await axios.post(
+      "http://localhost:8080/test-formdata",
+      data,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    const newURL = response.data["file:0"];
+    await axios.put(`http://localhost:8080/api/user/${userId}`, {
+      image: newURL,
+    });
+
+    setIsPicUpdated(true);
+    setTimeout(() => {
+      setIsPicUpdated(false);
+    }, 4000);
   };
 
   useEffect(() => {
     const token = Cookies.get("token");
-
     if (token) {
       const decodedToken = jwtDecode(token);
       const { id } = decodedToken;
       fetchUserData(id);
     }
   }, []);
-
-  console.log(data);
 
   const fetchUserData = async (userId) => {
     try {
@@ -54,6 +138,7 @@ export default function UserDashboard() {
         city: userData.city,
         image: userData.image,
       });
+      setUserId(userId);
     } catch (error) {
       console.log("Error fetching user data:", error);
     }
@@ -63,21 +148,27 @@ export default function UserDashboard() {
     switch (activeTab) {
       case "profile":
         return (
-          <div className='border mt-10 border-gray-300 p-4 w-3/4 mx-auto '>
+          <div className='border mt-10 mb-24 border-gray-300 p-4 w-3/4 mx-auto '>
             <p>{originalData.fullName}</p>
             <p>{originalData.email}</p>
             <p>{originalData.phone}</p>
             <p>{originalData.city}</p>
+            <Image
+              src={originalData.image}
+              width={350}
+              height={300}
+              className='h-full object-cover rounded-md'
+            />
           </div>
         );
 
       case "editProfile":
         return (
-          <div className='border my-10 border-gray-300 p-4 w-3/4 mx-auto'>
-            <form className='space-y-4 md:space-y-6'>
+          <div className='border mt-10 mb-24 border-gray-300 p-4 w-3/4 mx-auto flex'>
+            <div className='w-1/2 pr-4'>
               <div>
                 <label
-                  hmtlFor='fullName'
+                  htmlFor='fullName'
                   className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
                 >
                   Fullname
@@ -93,10 +184,16 @@ export default function UserDashboard() {
                 />
               </div>
 
+              {errors.userName && (
+                <span className='inline-block mt-2 mb-4 px-2 py-1 text-sm font-medium text-white bg-red-500 rounded-md animate-pulse'>
+                  {errors.userName}
+                </span>
+              )}
+
               <div>
                 <label
-                  hmtlFor='phone'
-                  className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
+                  htmlFor='phone'
+                  className='block mb-2 mt-2 text-sm font-medium text-gray-900 dark:text-white'
                 >
                   Phone
                 </label>
@@ -110,10 +207,16 @@ export default function UserDashboard() {
                 />
               </div>
 
+              {errors.userPhone && (
+                <span className='inline-block mt-2 mb-4 px-2 py-1 text-sm font-medium text-white bg-red-500 rounded-md animate-pulse'>
+                  {errors.userPhone}
+                </span>
+              )}
+
               <div>
                 <label
-                  hmtlFor='city'
-                  className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
+                  htmlFor='city'
+                  className='block mb-2 mt-2 text-sm font-medium text-gray-900 dark:text-white'
                 >
                   City
                 </label>
@@ -127,9 +230,33 @@ export default function UserDashboard() {
                 />
               </div>
 
+              {errors.userCity && (
+                <span className='inline-block mt-2 px-2 py-1 text-sm font-medium text-white bg-red-500 rounded-md animate-pulse'>
+                  {errors.userCity}
+                </span>
+              )}
+
+              <button
+                onClick={updateInfo}
+                type='submit'
+                className='w-full mt-5 text-black bg-cyan-400 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800'
+              >
+                Update Info
+              </button>
+
+              {isUpdated && (
+                <div className='bg-green-100 text-center text-green-900 px-4 py-3 rounded-md my-4'>
+                  Info Updated!!
+                </div>
+              )}
+            </div>
+
+            <hr className='border-gray-300 my-auto h-52 border-solid border-l-2' />
+
+            <div className='w-1/2 pl-4 flex flex-col justify-center items-center'>
               <div>
                 <label
-                  hmtlFor='city'
+                  htmlFor='picture'
                   className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
                 >
                   Picture
@@ -141,21 +268,28 @@ export default function UserDashboard() {
                   </span>
                   <input
                     type='file'
-                    name='image'
+                    name='file'
                     accept='image/png, image/jpeg, image/jpg'
                     className='opacity-0 absolute inset-0 w-full h-full cursor-pointer'
-                    onChange={(event) => handleChange(event)}
+                    onChange={handlePicture}
                   />
                 </label>
               </div>
 
               <button
+                onClick={updateFile}
                 type='submit'
-                className='w-full text-black bg-cyan-400 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800'
+                className='w-40 mt-5 text-black bg-cyan-400 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800'
               >
-                Update Info
+                Update Picture
               </button>
-            </form>
+
+              {isPicUpdated && (
+                <div className='bg-green-100 text-center text-green-900 px-4 py-3 rounded-md my-4'>
+                  Profile Picture Updated!!
+                </div>
+              )}
+            </div>
           </div>
         );
 
