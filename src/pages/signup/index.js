@@ -82,6 +82,7 @@ export default function SignUpMain() {
         email={email}
         password={password}
         errors={errors}
+        isAccountCreated={isAccountCreated}
         handleChange={handleChange}
         handleSubmit={handleSubmit}
       />

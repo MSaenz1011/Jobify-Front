@@ -122,6 +122,7 @@ function UserDashboard() {
       const decodedToken = jwtDecode(token);
       const { id } = decodedToken;
       fetchUserData(id);
+      console.log(token);
     }
   }, []);
 

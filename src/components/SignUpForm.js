@@ -8,6 +8,7 @@ const SignUpForm = ({
   errors,
   handleChange,
   handleSubmit,
+  isAccountCreated,
 }) => {
   return (
     <section className='bg-slate-500'>
