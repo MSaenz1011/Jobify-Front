@@ -3,13 +3,16 @@ import Footer from "@/components/Footer";
 import NavBar from "@/components/NavBar";
 import axios from "axios";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 const JobId = ({ jobData }) => {
+  const router = useRouter();
+
   return (
     <React.Fragment>
       <NavBar />
-      <section className='flex justify-around items-center'>
-        <div className='m-4 p-4 max-w-sm  rounded-md shadow-md bg-slate-400 job-card h-[300px]'>
+      <section className='flex flex-col items-center'>
+        <div className='m-10 p-4 max-w-sm  rounded-md shadow-md bg-slate-400 h-[300px]'>
           <div className='h-48'>
             <Image
               src={jobData.data.img}
@@ -26,7 +29,7 @@ const JobId = ({ jobData }) => {
           </div>
         </div>
 
-        <div className='flex flex-col items-center justify-center min-h-screen'>
+        <div className='flex flex-col items-center justify-center max-w-sm m-20'>
           <div className='bg-slate-300 rounded-lg p-6 max-w-md'>
             <h1 className='text-3xl font-bold mb-4 text-center '>
               Job description:
@@ -49,6 +52,20 @@ const JobId = ({ jobData }) => {
               </ul>
             </div>
           </div>
+        </div>
+
+        <div className='flex justify-center mb-10'>
+          <button
+            className={`text-white font-bold py-2 px-4 rounded ${
+              jobData.data.availability
+                ? "bg-blue-500  cursor-pointer hover:bg-blue-700"
+                : "cursor-not-allowed bg-gray-400"
+            }`}
+            onClick={() => router.push("/offerapplication")}
+            disabled={!jobData.data.availability}
+          >
+            {jobData.data.availability ? "Apply now" : "Application Closed"}
+          </button>
         </div>
       </section>
 
