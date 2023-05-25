@@ -3,10 +3,14 @@ import Footer from "@/components/Footer";
 import NavBar from "@/components/NavBar";
 import axios from "axios";
 import Image from "next/image";
-import { useRouter } from "next/router";
+import Router from "next/router";
 
 const JobId = ({ jobData }) => {
-  const router = useRouter();
+  const handleApply = () => {
+    if (jobData.data.availability) {
+      Router.push(`/offerapplication/${jobData.id}`);
+    }
+  };
 
   return (
     <React.Fragment>
@@ -58,10 +62,10 @@ const JobId = ({ jobData }) => {
           <button
             className={`text-white font-bold py-2 px-4 rounded ${
               jobData.data.availability
-                ? "bg-blue-500  cursor-pointer hover:bg-blue-700"
+                ? "bg-blue-500  hover:bg-blue-700"
                 : "cursor-not-allowed bg-gray-400"
             }`}
-            onClick={() => router.push("/offerapplication")}
+            onClick={handleApply}
             disabled={!jobData.data.availability}
           >
             {jobData.data.availability ? "Apply now" : "Application Closed"}
@@ -82,6 +86,9 @@ export async function getServerSideProps({ params }) {
   try {
     const response = await axios.get(`http://localhost:8080/api/jobs/${jobId}`);
     const jobData = response.data;
+
+    // Add the jobId to the jobData object
+    jobData.id = jobId;
 
     return {
       props: {
