@@ -34,7 +34,7 @@ const JobId = ({ jobData }) => {
         </div>
 
         <div className='flex flex-col items-center justify-center max-w-sm m-20'>
-          <div className='bg-slate-300 rounded-lg p-6 max-w-md'>
+          <div className='bg-slate-300 rounded-lg p-4 max-w-md'>
             <h1 className='text-3xl font-bold mb-4 text-center '>
               Job description:
             </h1>
