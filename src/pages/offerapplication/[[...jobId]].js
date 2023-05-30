@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
 import PrivateRoute from "@/utils/privateRoute";
+import NavBar from "@/components/NavBar";
 import JobDetails from "@/components/JobDetails";
+import Cookies from "js-cookie";
+import { useRouter } from "next/router";
 
 const OfferApplicationPage = ({ jobData }) => {
   const [info, setInfo] = useState({
@@ -30,8 +33,10 @@ const OfferApplicationPage = ({ jobData }) => {
 
   const [file, setFile] = useState(null);
   const [errors, setErrors] = useState({});
+  const [isJobApplied, setIsJobApplied] = useState(false);
   const numberRegex = /^[0-9]*$/;
   const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+  const router = useRouter();
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -39,8 +44,6 @@ const OfferApplicationPage = ({ jobData }) => {
       ...info,
       [name]: value,
     });
-    console.log(info);
-    console.log(file);
   };
 
   const handlePicture = (e) => {
@@ -99,7 +102,7 @@ const OfferApplicationPage = ({ jobData }) => {
       const data = new FormData();
       data.append("Candidate PDF", file);
       for (let i = 0; i < file.length; i++) {
-        data.append(`file ${i}`, file[i], file[i].name);
+        data.append(`file_${i}`, file[i], file[i].name);
       }
 
       const response = await axios.post(
@@ -109,15 +112,45 @@ const OfferApplicationPage = ({ jobData }) => {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
+
+      const newURL = response.data["file_0"];
+
+      await axios.post(
+        "http://localhost:8080/api/offers",
+        {
+          title: jobData.data.title,
+          company: jobData.data.company,
+          country: jobData.data.country,
+          img: jobData.data.img,
+          candidateName,
+          candidateEmail,
+          candidateResume,
+          candidatePhone,
+          candidateLinkedIn,
+          candidateEducation,
+          candidateTechnologies,
+          candidateSkills,
+          candidatePDF: newURL,
+        },
+        {
+          headers: { Authorization: `Bearer ${Cookies.get("token")}` },
+        }
+      );
+      setIsJobApplied(true);
+      setTimeout(() => {
+        setIsJobApplied(false);
+        router.push("/");
+      }, 4000);
     }
   };
 
   return (
     <div className='flex flex-col'>
+      <NavBar />
       <JobDetails jobData={jobData.data} />
 
-      <div className='flex flex-col items-center justify-center px-6 py-8 mx-auto'>
-        <div className=' bg-gray-500 rounded-lg  w-600 '>
+      <div className='flex flex-col items-center px-6 py-8'>
+        <div className=' bg-gray-500 rounded-lg w-full max-w-2xl '>
           <div className='p-6 space-y-4 md:space-y-6 sm:p-8'>
             <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white'>
               Submit your info
@@ -148,7 +181,7 @@ const OfferApplicationPage = ({ jobData }) => {
 
               <div>
                 <label
-                  for='candidateEmai'
+                  htmlFor='candidateEmai'
                   className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
                 >
                   Candidate's Email
@@ -177,6 +210,7 @@ const OfferApplicationPage = ({ jobData }) => {
                   Candidate's Resume
                 </label>
                 <textarea
+                  className='w-full rounded-lg p-2.5 '
                   name='candidateResume'
                   value={candidateResume}
                   onChange={handleChange}
@@ -192,7 +226,7 @@ const OfferApplicationPage = ({ jobData }) => {
 
               <div>
                 <label
-                  for='candidatePhone'
+                  htmlFor='candidatePhone'
                   className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
                 >
                   Candidate's Phone
@@ -214,7 +248,7 @@ const OfferApplicationPage = ({ jobData }) => {
 
               <div>
                 <label
-                  for='candidateLinkedIn'
+                  htmlFor='candidateLinkedIn'
                   className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
                 >
                   Candidate's LinkedIn
@@ -236,7 +270,7 @@ const OfferApplicationPage = ({ jobData }) => {
 
               <div>
                 <label
-                  for='candidateEducation'
+                  htmlFor='candidateEducation'
                   className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
                 >
                   Candidate's Education
@@ -258,7 +292,7 @@ const OfferApplicationPage = ({ jobData }) => {
 
               <div>
                 <label
-                  for='candidateTechnologies'
+                  htmlFor='candidateTechnologies'
                   className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
                 >
                   Candidate's Technologies
@@ -280,7 +314,7 @@ const OfferApplicationPage = ({ jobData }) => {
 
               <div>
                 <label
-                  for='candidateSkills'
+                  hmtlFor='candidateSkills'
                   className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
                 >
                   Candidate's Skills
@@ -303,7 +337,7 @@ const OfferApplicationPage = ({ jobData }) => {
               <div>
                 <label
                   htmlFor='candidatePDF'
-                  className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
+                  className='block mb-2 text-sm font-medium text-gray-900 '
                 >
                   Candidate PDF
                 </label>
@@ -320,7 +354,11 @@ const OfferApplicationPage = ({ jobData }) => {
                   />
                 </label>
 
-                {file && <p className='text-sm text-gray-500'>{file.name}</p>}
+                {file && (
+                  <p className='block mb-2 text-sm font-medium text-gray-900 m-4'>
+                    {file[0].name}
+                  </p>
+                )}
               </div>
 
               <button
@@ -330,6 +368,11 @@ const OfferApplicationPage = ({ jobData }) => {
                 Apply to this job
               </button>
             </form>
+            {isJobApplied && (
+              <div className='bg-green-100 text-green-900 px-4 py-3 rounded-md my-4'>
+                Job Applied Successfully. Redirecting you to the home page
+              </div>
+            )}
           </div>
         </div>
       </div>

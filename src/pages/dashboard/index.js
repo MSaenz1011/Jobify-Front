@@ -5,6 +5,7 @@ import jwtDecode from "jwt-decode";
 import NavBar from "@/components/NavBar";
 import Image from "next/image";
 import PrivateRoute from "@/utils/privateRoute";
+import OfferDetail from "@/components/OfferDetail";
 
 function UserDashboard() {
   const [activeTab, setActiveTab] = useState("editProfile");
@@ -12,6 +13,7 @@ function UserDashboard() {
   const [isPicUpdated, setIsPicUpdated] = useState(false);
   const [originalData, setOriginalData] = useState({});
   const [userId, setUserId] = useState("");
+  const [selectedOffer, setSelectedOffer] = useState(null);
 
   const [file, setFile] = useState(null);
   const [data, setData] = useState({
@@ -23,7 +25,9 @@ function UserDashboard() {
   });
 
   const { fullName, phone, city, image } = data;
+  const [offers, setOffers] = useState([]);
   const [errors, setErrors] = useState({});
+  const [fileError, setFileError] = useState({});
   const numberRegex = /^[0-9]*$/;
 
   const handleChange = (event) => {
@@ -33,6 +37,10 @@ function UserDashboard() {
       ...data,
       [name]: value,
     });
+  };
+
+  const handleClick = (offer) => {
+    setSelectedOffer(offer);
   };
 
   const handlePicture = (e) => {
@@ -88,32 +96,41 @@ function UserDashboard() {
   };
 
   const updateFile = async () => {
-    const data = new FormData();
-    data.append("fullName", fullName);
-
-    for (let i = 0; i < file.length; i++) {
-      data.append(`file:${i}`, file[i], file[i].name);
+    const validatePicture = {};
+    if (!file || file.length <= 0) {
+      validatePicture.userImage = "Upload a file";
     }
 
-    const response = await axios.post(
-      "http://localhost:8080/test-formdata",
-      data,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+    setFileError(validatePicture);
+
+    if (Object.keys(validatePicture).length === 0) {
+      const data = new FormData();
+      data.append("fullName", fullName);
+
+      for (let i = 0; i < file.length; i++) {
+        data.append(`file:${i}`, file[i], file[i].name);
       }
-    );
 
-    const newURL = response.data["file:0"];
-    await axios.put(`http://localhost:8080/api/user/${userId}`, {
-      image: newURL,
-    });
+      const response = await axios.post(
+        "http://localhost:8080/test-formdata",
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-    setIsPicUpdated(true);
-    setTimeout(() => {
-      setIsPicUpdated(false);
-    }, 4000);
+      const newURL = response.data["file:0"];
+      await axios.put(`http://localhost:8080/api/user/${userId}`, {
+        image: newURL,
+      });
+
+      setIsPicUpdated(true);
+      setTimeout(() => {
+        setIsPicUpdated(false);
+      }, 4000);
+    }
   };
 
   useEffect(() => {
@@ -139,6 +156,7 @@ function UserDashboard() {
         city: userData.city,
         image: userData.image,
       });
+      setOffers(userData.offers);
       setUserId(userId);
     } catch (error) {
       console.log("Error fetching user data:", error);
@@ -285,6 +303,12 @@ function UserDashboard() {
                 Update Picture
               </button>
 
+              {fileError.userImage && (
+                <span className='inline-block mt-2 px-2 py-1 text-sm font-medium text-white bg-red-500 rounded-md animate-pulse'>
+                  {fileError.userImage}
+                </span>
+              )}
+
               {isPicUpdated && (
                 <div className='bg-green-100 text-center text-green-900 px-4 py-3 rounded-md my-4'>
                   Profile Picture Updated!!
@@ -296,8 +320,21 @@ function UserDashboard() {
 
       case "jobs":
         return (
-          <div className='border mt-10 border-gray-300 p-4 w-3/4 mx-auto'></div>
+          <React.Fragment>
+            {offers.length > 0 ? (
+              <OfferDetail
+                offers={offers}
+                selectedOffer={selectedOffer}
+                handleClick={handleClick}
+              />
+            ) : (
+              <h2 className='text-center text-2xl font-bold mt-10'>
+                No applications at the moment
+              </h2>
+            )}
+          </React.Fragment>
         );
+
       default:
         return null;
     }

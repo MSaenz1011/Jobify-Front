@@ -56,7 +56,6 @@ export default function SignUpMain() {
           userData
         );
 
-        console.log("Response received:", res.data);
         setIsAccountCreated(true);
 
         setTimeout(() => {
@@ -68,7 +67,6 @@ export default function SignUpMain() {
     };
 
     if (Object.keys(validationErrors).length === 0) {
-      console.log("Submitting form data...");
       createUserDB();
       setUserData({ fullName: "", email: "", password: "" });
     }
