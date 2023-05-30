@@ -3,7 +3,7 @@ import React from "react";
 export default function Footer() {
   return (
     <React.Fragment>
-      <div className='container py-16 xl:px-20 py-20  lg:px-12  py-20  bg-slate-300'>
+      <div className='container py-16  py-20  bg-slate-300'>
         <div className='grid grid-cols-3 gap-20'>
           <div className='flex flex-col flex-shrink-0'>
             <h1 className='text-slate-950 text-5xl hover:text-gray-500'>
