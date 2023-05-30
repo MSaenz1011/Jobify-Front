@@ -167,17 +167,49 @@ function UserDashboard() {
     switch (activeTab) {
       case "profile":
         return (
-          <div className='border mt-10 mb-24 border-gray-300 p-4 w-3/4 mx-auto '>
-            <p>{originalData.fullName}</p>
-            <p>{originalData.email}</p>
-            <p>{originalData.phone}</p>
-            <p>{originalData.city}</p>
-            <Image
-              src={originalData.image}
-              width={350}
-              height={300}
-              className='h-full object-cover rounded-md'
-            />
+          <div className='border mt-10 mb-24 border-gray-300 p-4 w-3/4 mx-auto flex'>
+            <div className='flex-1'>
+              <div>
+                <h2 className='text-xl font-bold'>Username</h2>
+                <p>{originalData.fullName}</p>
+                <h2 className='text-xl font-bold'>User's Email</h2>
+                <p>{originalData.email}</p>
+                <h2 className='text-xl font-bold'>User's Phone</h2>
+                {originalData.phone ? (
+                  <p>{originalData.phone}</p>
+                ) : (
+                  <p>No Phone Registered</p>
+                )}
+                <h2 className='text-xl font-bold'>City</h2>
+                {originalData.city ? (
+                  <p>{originalData.city}</p>
+                ) : (
+                  <p>No City Registered</p>
+                )}
+              </div>
+            </div>
+            <div className='flex-1 flex justify-center'>
+              <div className='max-w-sm'>
+                <h2 className='text-xl font-bold'>Profile Pic</h2>
+                <div className='w-40 h-40 rounded-full overflow-hidden mt-2'>
+                  {originalData.image ? (
+                    <Image
+                      src={originalData.image}
+                      width={350}
+                      height={300}
+                      className='object-cover w-full h-full'
+                    />
+                  ) : (
+                    <Image
+                      src='https://icon-library.com/images/no-profile-pic-icon/no-profile-pic-icon-0.jpg'
+                      width={350}
+                      height={300}
+                      className='object-cover w-full h-full'
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         );
 
@@ -190,7 +222,7 @@ function UserDashboard() {
                   htmlFor='fullName'
                   className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
                 >
-                  Fullname
+                  Username
                 </label>
                 <input
                   type='text'

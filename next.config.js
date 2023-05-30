@@ -9,6 +9,7 @@ const nextConfig = {
       "www.cloud4c.com",
       "upload.wikimedia.org",
       "res.cloudinary.com",
+      "icon-library.com",
     ],
   },
 };

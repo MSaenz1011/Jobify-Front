@@ -2,8 +2,8 @@ import Image from "next/image";
 
 const JobDetails = ({ jobData }) => {
   return (
-    <section className='flex flex-col items-center'>
-      <div className='m-10 p-4 max-w-sm  rounded-md shadow-md bg-slate-400 h-[300px]'>
+    <section className='flex justify-center items-center'>
+      <div className='m-10 p-4 max-w-sm rounded-md shadow-md bg-slate-400 h-[300px]'>
         <div className='h-48'>
           <Image
             src={jobData.img}
@@ -20,12 +20,12 @@ const JobDetails = ({ jobData }) => {
         </div>
       </div>
 
-      <div className='flex flex-col items-center justify-center max-w-sm m-20'>
-        <div className='bg-slate-300 rounded-lg p-4 max-w-md'>
+      <div className='m-10 p-4 max-w-sm bg-slate-300 rounded-lg'>
+        <div className='max-w-md'>
           <h1 className='text-3xl font-bold mb-4 text-center'>
             Job description:
           </h1>
-          <h2 className='text-xl  mb-4'>{jobData.description}</h2>
+          <h2 className='text-xl mb-4'>{jobData.description}</h2>
           <div className='mb-6'>
             <h2 className='text-lg font-bold mb-2'>Qualifications:</h2>
             <ul className='list-outside marker:text-green list-disc ml-6'>
