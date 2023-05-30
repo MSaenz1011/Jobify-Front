@@ -2,7 +2,7 @@
 
 # **What is Jobify?**
 
-&nbsp;&nbsp;&nbsp;&nbsp Jobify is the individual project to take as part of our
+Jobify is the individual project to take as part of our
 study plan at Make It Real. It is a fully fledged website we
 developed from the ground up, be it design, front-end and back-end
 functionality, we made it. 
