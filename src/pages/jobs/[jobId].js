@@ -84,7 +84,9 @@ export async function getServerSideProps({ params }) {
   const jobId = params.jobId;
 
   try {
-    const response = await axios.get(`http://localhost:8080/api/jobs/${jobId}`);
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_DATABASE_URL}/api/jobs/${jobId}`
+    );
     const jobData = response.data;
 
     // Add the jobId to the jobData object

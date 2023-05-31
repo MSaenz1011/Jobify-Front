@@ -25,7 +25,7 @@ export default function NavBar() {
   const fetchUserData = async (userId) => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/user/${userId}`
+        `${process.env.NEXT_PUBLIC_DATABASE_URL}/api/user/${userId}`
       );
       const userData = response.data.data;
 

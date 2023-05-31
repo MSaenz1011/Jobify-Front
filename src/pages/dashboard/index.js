@@ -76,7 +76,7 @@ function UserDashboard() {
     const updateUser = async () => {
       try {
         const res = await axios.put(
-          `http://localhost:8080/api/user/${userId}`,
+          `${process.env.NEXT_PUBLIC_DATABASE_URL}/api/user/${userId}`,
           { fullName, phone, city }
         );
         setIsUpdated(true);
@@ -112,7 +112,7 @@ function UserDashboard() {
       }
 
       const response = await axios.post(
-        "http://localhost:8080/test-formdata",
+        `${process.env.NEXT_PUBLIC_DATABASE_URL}/test-formdata`,
         data,
         {
           headers: {
@@ -122,9 +122,12 @@ function UserDashboard() {
       );
 
       const newURL = response.data["file:0"];
-      await axios.put(`http://localhost:8080/api/user/${userId}`, {
-        image: newURL,
-      });
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_DATABASE_URL}/api/user/${userId}`,
+        {
+          image: newURL,
+        }
+      );
 
       setIsPicUpdated(true);
       setTimeout(() => {
@@ -145,7 +148,7 @@ function UserDashboard() {
   const fetchUserData = async (userId) => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/user/${userId}`
+        `${process.env.NEXT_PUBLIC_DATABASE_URL}/api/user/${userId}`
       );
       const userData = response.data.data;
 

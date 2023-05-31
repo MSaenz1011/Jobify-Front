@@ -106,7 +106,7 @@ const OfferApplicationPage = ({ jobData }) => {
       }
 
       const response = await axios.post(
-        "http://localhost:8080/test-formdata",
+        `${process.env.NEXT_PUBLIC_DATABASE_URL}/test-formdata`,
         data,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -116,7 +116,7 @@ const OfferApplicationPage = ({ jobData }) => {
       const newURL = response.data["file_0"];
 
       await axios.post(
-        "http://localhost:8080/api/offers",
+        `${process.env.NEXT_PUBLIC_DATABASE_URL}/api/offers`,
         {
           title: jobData.data.title,
           company: jobData.data.company,
@@ -384,7 +384,9 @@ export async function getServerSideProps({ params }) {
   const jobId = params.jobId;
 
   try {
-    const response = await axios.get(`http://localhost:8080/api/jobs/${jobId}`);
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_DATABASE_URL}/api/jobs/${jobId}`
+    );
     const jobData = response.data;
 
     return {

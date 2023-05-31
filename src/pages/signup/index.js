@@ -52,7 +52,7 @@ export default function SignUpMain() {
     const createUserDB = async () => {
       try {
         const res = await axios.post(
-          "http://localhost:8080/api/user/signup",
+          `${process.env.NEXT_PUBLIC_DATABASE_URL}/api/user/signup`,
           userData
         );
 

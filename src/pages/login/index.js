@@ -49,7 +49,7 @@ export default function LoginMain() {
     if (Object.keys(validationErrors).length === 0) {
       try {
         const response = await axios.post(
-          "http://localhost:8080/api/user/signin",
+          `${process.env.NEXT_PUBLIC_DATABASE_URL}/api/user/signin`,
           { email, password }
         );
         const { data } = response.data;
