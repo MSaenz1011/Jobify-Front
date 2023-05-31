@@ -23,7 +23,9 @@ export default function Jobs({ dataJobs }) {
 
 export async function getServerSideProps(context) {
   try {
-    const response = await axios.get("http://localhost:8080/api/jobs");
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_DATABASE_URL}/api/jobs`
+    );
     const dataJobs = response.data;
 
     return {
